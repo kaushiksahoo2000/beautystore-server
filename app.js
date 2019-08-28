@@ -7,7 +7,6 @@ const PORT = 8080
 const app = express()
 
 app.use('*', cors({ origin: `http://localhost:${PORT}` }))
-// app.use(cors({ origin: true }))
 app.use(bodyParser.json())
 app.use('/api/v1', router)
 app.use((err, req, resp, next) => {

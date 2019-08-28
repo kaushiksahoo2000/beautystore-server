@@ -1,4 +1,4 @@
-import { Router, Request } from 'express'
+import { Router } from 'express'
 import { genProductID } from '../util'
 import admin from 'firebase-admin'
 import serviceAccount from '../../keyfile.json'
@@ -17,6 +17,13 @@ router.get('/', async (req, resp, next) => {
 router.post('/products', async (req, resp, next) => {
 	try {
 		const { name, price, link, rating, category } = req.body
+
+		if (!name) throw new Error('name is blank')
+		if (!price) throw new Error('price is blank')
+		if (!link) throw new Error('link is blank')
+		if (!rating) throw new Error('rating is blank')
+		if (!category) throw new Error('category is blank')
+
 		const productID = genProductID(name, link)
 		const data = {
 			name,
