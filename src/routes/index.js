@@ -32,7 +32,7 @@ router.post('/products', async (req, resp, next) => {
 			rating,
 			category,
 		}
-		const product = await db
+		const productRef = await db
 			.collection(PRODUCTS_COLLECTION)
 			.doc(productID)
 			.set(data)
@@ -56,13 +56,37 @@ router.get('/products/:id', async (req, resp, next) => {
 			.doc(productID)
 			.get()
 
-		if (!product.exists) {
-			throw new Error('product does not exist')
-		}
+		if (!product.exists) throw new Error('product does not exist')
 		resp.json({
 			id: product.id,
 			data: product.data(),
 		})
+	} catch (err) {
+		next(err)
+	}
+})
+
+router.get('/categories/:category', async (req, resp, next) => {
+	try {
+		const { params } = req
+		const { category } = params
+
+		if (!category) throw new Error('category is required')
+		const productsSnapshot = await db
+			.collection('products')
+			.where('category', '==', category)
+			.orderBy('rating', 'desc')
+			.get()
+		const products = []
+		productsSnapshot.forEach(product => {
+			products.push({
+				id: product.id,
+				data: product.data(),
+			})
+		})
+
+		if (products.length === 0) throw new Error('category does not exist')
+		resp.json(products)
 	} catch (err) {
 		next(err)
 	}

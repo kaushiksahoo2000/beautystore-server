@@ -16,7 +16,7 @@ app.use((err, req, resp, next) => {
 })
 
 app.listen(PORT, () => {
-	console.log('Beautystore is listening on 8080')
+	console.log(`Beautystore is listening on ${PORT}`)
 })
 
 export default app
