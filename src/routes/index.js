@@ -32,13 +32,36 @@ router.post('/products', async (req, resp, next) => {
 			rating,
 			category,
 		}
-		const productRef = await db
+		const product = await db
 			.collection(PRODUCTS_COLLECTION)
 			.doc(productID)
 			.set(data)
 		resp.json({
 			id: productID,
 			data,
+		})
+	} catch (err) {
+		next(err)
+	}
+})
+
+router.get('/products/:id', async (req, resp, next) => {
+	try {
+		const { params } = req
+		const { id: productID } = params
+
+		if (!productID) throw new Error('product ID is required')
+		const product = await db
+			.collection(PRODUCTS_COLLECTION)
+			.doc(productID)
+			.get()
+
+		if (!product.exists) {
+			throw new Error('product does not exist')
+		}
+		resp.json({
+			id: product.id,
+			data: product.data(),
 		})
 	} catch (err) {
 		next(err)
