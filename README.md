@@ -14,7 +14,7 @@ A simple Node.js API to handle skin care product management
 npm install
 ```
 
-3. Start the server
+4. Start the server
 
 ```
 npm start
