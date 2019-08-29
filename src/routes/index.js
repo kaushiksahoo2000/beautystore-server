@@ -1,5 +1,7 @@
 import { Router } from 'express'
 import { genProductID } from '../util'
+import Collections from '../consts/db_collections'
+import Errors from '../consts/errors'
 import admin from 'firebase-admin'
 import serviceAccount from '../../keyfile.json'
 
@@ -7,22 +9,21 @@ admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount),
 })
 const db = admin.firestore()
-const PRODUCTS_COLLECTION = 'products'
 const router = Router()
 
-router.get('/', async (req, resp, next) => {
-	resp.send('Hello from the Beautystore API')
+router.get('/', async (req, res, next) => {
+	res.send('Hello from the Beautystore API')
 })
 
-router.post('/products', async (req, resp, next) => {
+router.post('/products', async (req, res, next) => {
 	try {
 		const { name, price, link, rating, category } = req.body
 
-		if (!name) throw new Error('name is blank')
-		if (!price) throw new Error('price is blank')
-		if (!link) throw new Error('link is blank')
-		if (!rating) throw new Error('rating is blank')
-		if (!category) throw new Error('category is blank')
+		if (!name && typeof name === 'string') throw Errors.BLANK_NAME_ERR
+		if (!price && typeof price === 'number') throw Errors.BLANK_PRICE_ERR
+		if (!link && typeof link === 'string') throw Errors.BLANK_LINK_ERR
+		if (!rating && typeof rating === 'number') throw Errors.BLANK_RATING_ERR
+		if (!category && typeof category === 'string') throw Errors.BLANK_CATEGORY_ERR
 
 		const productID = genProductID(name, link)
 		const data = {
@@ -33,10 +34,10 @@ router.post('/products', async (req, resp, next) => {
 			category,
 		}
 		const productRef = await db
-			.collection(PRODUCTS_COLLECTION)
+			.collection(Collections.PRODUCTS_COLLECTION)
 			.doc(productID)
 			.set(data)
-		resp.json({
+		res.json({
 			id: productID,
 			data,
 		})
@@ -45,19 +46,20 @@ router.post('/products', async (req, resp, next) => {
 	}
 })
 
-router.get('/products/:id', async (req, resp, next) => {
+router.get('/products/:id', async (req, res, next) => {
 	try {
-		const { params } = req
-		const { id: productID } = params
+		const {
+			params: { id: productID },
+		} = req
 
-		if (!productID) throw new Error('product ID is required')
+		if (!productID && typeof productID === 'string') throw Errors.PRODUCT_ID_ERR
 		const product = await db
-			.collection(PRODUCTS_COLLECTION)
+			.collection(Collections.PRODUCTS_COLLECTION)
 			.doc(productID)
 			.get()
 
-		if (!product.exists) throw new Error('product does not exist')
-		resp.json({
+		if (!product.exists) throw Errors.PRODUCT_EXISTS_ERR
+		res.json({
 			id: product.id,
 			data: product.data(),
 		})
@@ -66,14 +68,15 @@ router.get('/products/:id', async (req, resp, next) => {
 	}
 })
 
-router.get('/categories/:category', async (req, resp, next) => {
+router.get('/categories/:category', async (req, res, next) => {
 	try {
-		const { params } = req
-		const { category } = params
+		const {
+			params: { category },
+		} = req
 
-		if (!category) throw new Error('category is required')
+		if (!category) throw Errors.BLANK_CATEGORY_ERR
 		const productsSnapshot = await db
-			.collection('products')
+			.collection(Collections.PRODUCTS_COLLECTION)
 			.where('category', '==', category)
 			.orderBy('rating', 'desc')
 			.get()
@@ -85,8 +88,8 @@ router.get('/categories/:category', async (req, resp, next) => {
 			})
 		})
 
-		if (products.length === 0) throw new Error('category does not exist')
-		resp.json(products)
+		if (products.length === 0) throw Errors.CATEGORY_EXISTS_ERR
+		res.json(products)
 	} catch (err) {
 		next(err)
 	}

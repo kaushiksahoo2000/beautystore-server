@@ -9,8 +9,8 @@ const app = express()
 app.use('*', cors({ origin: `http://localhost:${PORT}` }))
 app.use(bodyParser.json())
 app.use('/api/v1', router)
-app.use((err, req, resp, next) => {
-	resp.status(400).json({
+app.use((err, req, res, next) => {
+	res.status(400).json({
 		error: err.message,
 	})
 })

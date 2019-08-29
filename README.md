@@ -8,6 +8,12 @@ A simple Node.js API to handle skin care product management
 2. Ensure that there is a valid `keyfile.json` file in the root directory. This has
    private key information allowing you to use your personal Firestore account to
    persist data. More information: https://firebase.google.com/docs/firestore/quickstart
+3. Install dependencies
+
+```
+npm install
+```
+
 3. Start the server
 
 ```
