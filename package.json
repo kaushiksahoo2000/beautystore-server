@@ -1,0 +1,34 @@
+{
+	"name": "beautystore",
+	"version": "1.0.0",
+	"description": "Simple Node.js API to handle skincare product management",
+	"main": "app.js",
+	"scripts": {
+		"start": "nodemon app.js --exec babel-node --presets babel-preset-env",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/kaushiksahoo2000/beautystore.git"
+	},
+	"author": "Kaushik Sahoo",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/kaushiksahoo2000/beautystore/issues"
+	},
+	"homepage": "https://github.com/kaushiksahoo2000/beautystore#readme",
+	"dependencies": {
+		"blueimp-md5": "^2.11.1",
+		"body-parser": "^1.19.0",
+		"cors": "^2.8.5",
+		"express": "^4.17.1",
+		"firebase-admin": "^8.4.0"
+	},
+	"devDependencies": {
+		"babel-cli": "^6.26.0",
+		"babel-core": "^6.26.3",
+		"babel-loader": "^8.0.6",
+		"babel-preset-env": "^1.7.0",
+		"nodemon": "^1.19.1"
+	}
+}
