@@ -80,6 +80,8 @@ router.get('/categories/:category', async (req, res, next) => {
 			.where('category', '==', category)
 			.orderBy('rating', 'desc')
 			.get()
+
+		if (productsSnapshot.empty) throw Errors.CATEGORY_EXISTS_ERR
 		const products = []
 		productsSnapshot.forEach(product => {
 			products.push({
@@ -87,8 +89,6 @@ router.get('/categories/:category', async (req, res, next) => {
 				data: product.data(),
 			})
 		})
-
-		if (products.length === 0) throw Errors.CATEGORY_EXISTS_ERR
 		res.json(products)
 	} catch (err) {
 		next(err)
